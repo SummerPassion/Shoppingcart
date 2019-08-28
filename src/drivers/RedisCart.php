@@ -173,6 +173,10 @@ class RedisCart extends Driver
 
     /**
      * 购物车是否存在某商品
+     * @param $gid int 商品标识
+     * @param $uid int 用户id
+     * @param $zone null
+     * @return bool
      */
     public function cartExistsGoods($gid, $uid, $zone=null) {
         if (!$gid || !is_int($gid) || 0 >= $gid) {
