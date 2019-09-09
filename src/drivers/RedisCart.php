@@ -173,6 +173,7 @@ class RedisCart extends Driver
 
     /**
      * 购物车是否存在某商品
+     * 存在返回数量，不存在返回0
      * @param $gid int 商品标识
      * @param $uid int 用户id
      * @param $zone null
@@ -190,6 +191,10 @@ class RedisCart extends Driver
         $key = $this->cart_prefix . ($zone ?? $this->default_zone) . ':' . $this->user_prefix . $uid;
         $hash_key = $gid;
 
-        return 1 == $this->redis_obj->hExists($key, $hash_key);
+        if (1 == $this->redis_obj->hExists($key, $hash_key)) {
+            return $this->redis_obj->hGet($key, $hash_key);
+        } else {
+            return 0;
+        }
     }
 }
