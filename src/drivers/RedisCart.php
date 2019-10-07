@@ -56,7 +56,7 @@ class RedisCart extends Driver
      * @param null $zone 分片
      * @return bool
      */
-    public function cartOper($gid, $gnum, $uid, $zone=null) {
+    public function cartOper($gid, $gnum, $uid, $zone=null, $addition=null) {
 
         if (!$gid || !is_int($gid) || 0 >= $gid) {
             throw new \InvalidArgumentException('无效的商品标识。');
@@ -71,7 +71,7 @@ class RedisCart extends Driver
         }
 
         $key = $this->cart_prefix . ($zone ?? $this->default_zone) . ':' . $this->user_prefix . $uid;
-        $hash_key = $gid;
+        $hash_key = $addition ? ($addition . '_' . $gid) : $gid;
 
         if (false !== $ret = $this->redis_obj->hIncrBy($key, $hash_key, $gnum)) {
             if ($this->redis_obj->hGet($key, $hash_key) <= 0) {
@@ -93,7 +93,7 @@ class RedisCart extends Driver
      * @param $uid int 用户id
      * @param $zone null 分片
      */
-    public function cartUpdateSku($gid, $old_gid, $uid, $zone=null) {
+    public function cartUpdateSku($gid, $old_gid, $uid, $zone=null, $addition=null) {
 
         if (!$gid || !is_int($gid) || 0 >= $gid) {
             throw new \InvalidArgumentException('无效的商品标识。');
@@ -108,8 +108,8 @@ class RedisCart extends Driver
         }
 
         $key = $this->cart_prefix . ($zone ?? $this->default_zone) . ':' . $this->user_prefix . $uid;
-        $hash_key_old = $old_gid;
-        $hash_key = $gid;
+        $hash_key_old = $addition ? ($addition . '_' . $old_gid) : $old_gid;
+        $hash_key = $addition ? ($addition . '_' . $gid) : $gid;
 
         if (!$this->redis_obj->hExists($key, $hash_key_old)) {
             throw new ShoppingCartException("原商品不存在于购物车中。");
@@ -131,7 +131,7 @@ class RedisCart extends Driver
      * @param int $uid 用户id
      * @param null $zone 分片
      */
-    public function cartDelSingle($gid, $uid, $zone=null) {
+    public function cartDelSingle($gid, $uid, $zone=null, $addition=null) {
 
         if (!$gid || !is_int($gid) || 0 >= $gid) {
             throw new \InvalidArgumentException('无效的商品标识。');
@@ -142,7 +142,7 @@ class RedisCart extends Driver
         }
 
         $key = $this->cart_prefix . ($zone ?? $this->default_zone) . ':' . $this->user_prefix . $uid;
-        $hash_key = $gid;
+        $hash_key = $addition ? ($addition . '_' . $gid) : $gid;
 
         if (false === $this->redis_obj->hdel($key, $hash_key)) {
             return false;
@@ -179,7 +179,8 @@ class RedisCart extends Driver
      * @param $zone null
      * @return bool
      */
-    public function cartExistsGoods($gid, $uid, $zone=null) {
+    public function cartExistsGoods($gid, $uid, $zone=null, $addition=null) {
+
         if (!$gid || !is_int($gid) || 0 >= $gid) {
             throw new \InvalidArgumentException('无效的商品标识。');
         }
@@ -189,7 +190,7 @@ class RedisCart extends Driver
         }
 
         $key = $this->cart_prefix . ($zone ?? $this->default_zone) . ':' . $this->user_prefix . $uid;
-        $hash_key = $gid;
+        $hash_key = $addition ? ($addition . '_' . $gid) : $gid;
 
         if (1 == $this->redis_obj->hExists($key, $hash_key)) {
             return $this->redis_obj->hGet($key, $hash_key);
