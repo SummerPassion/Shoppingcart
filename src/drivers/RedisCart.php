@@ -172,8 +172,8 @@ class RedisCart extends Driver
      */
     public function cartDelMuiti(array $gids, int $uid, $zone=null, $addition=null) {
 
-        foreach ($gids as $k => $v) {
-            if (!$this->cartDelSingle($gid, $uid, $zone, $addition)) {
+        foreach ($gids as $v) {
+            if (!$this->cartDelSingle((int) $v, $uid, $zone, $addition)) {
                 throw new \InvalidArgumentException('删除失败。');
             }
         }
