@@ -132,13 +132,25 @@ class RedisCart extends Driver
      * @param null $zone 分片
      */
     public function cartDelSingle($gid, $uid, $zone=null, $addition=null) {
+        return $this->CartDelMain($gid, $uid, $zone, $addition);
+    }
+
+    /**
+     * 删除购物车商品主体
+     * @param $gid
+     * @param $uid
+     * @param null $zone
+     * @param null $addition
+     * @return bool
+     */
+    protected function CartDelMain ($gid, $uid, $zone=null, $addition=null) {
 
         if (!$gid || !is_int($gid) || 0 >= $gid) {
-            throw new \InvalidArgumentException('无效的商品标识。');
+            throw new \InvalidArgumentException('包含无效的商品标识。');
         }
 
         if (!$uid || !is_int($uid) || 0 >= $uid) {
-            throw new \InvalidArgumentException('无效的uid。');
+            throw new \InvalidArgumentException('包含无效的uid。');
         }
 
         $key = $this->cart_prefix . ($zone ?? $this->default_zone) . ':' . $this->user_prefix . $uid;
@@ -146,6 +158,24 @@ class RedisCart extends Driver
 
         if (false === $this->redis_obj->hdel($key, $hash_key)) {
             return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * 从购物车中删除多个商品
+     * @param array $gids
+     * @param int $uid
+     * @param null $zone
+     * @param null $addition
+     */
+    public function cartDelMuiti(array $gids, int $uid, $zone=null, $addition=null) {
+
+        foreach ($gids as $k => $v) {
+            if (!$this->cartDelSingle($gid, $uid, $zone, $addition)) {
+                throw new \InvalidArgumentException('删除失败。');
+            }
         }
 
         return true;

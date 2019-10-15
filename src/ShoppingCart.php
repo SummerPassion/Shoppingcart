@@ -15,6 +15,7 @@ use Mustang\Shoppingcart\exception\ShoppingCartException;
  * @method static ShoppingCart cartOper($gid, $gnum, $uid, $zone=null) 购物车添加/减少商品
  * @method static ShoppingCart cartUpdateSku($gid, $old_gid, $uid, $zone=null) 更新购物车中单件商品的SKU
  * @method static ShoppingCart cartDelSingle($gid, $uid, $zone=null) 从购物车中删除单种商品
+ * @method static ShoppingCart CartDelMain($gid, $uid, $zone=null) 从购物车中删除多件商品
  * @method static ShoppingCart cartClearAll($uid, $zone=null) 清空购物车
  * @method static ShoppingCart cartExistsGoods($gid, $uid, $zone=null) 购物车是否存在某商品
  * @package Mustang\Shoppingcart
